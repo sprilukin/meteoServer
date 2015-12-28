@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1.
+    BL999 Sensors data
+  table(class='bl999-list')
+    thead
+      tr
+        th Date
+        th Channel
+        th PowerUUID
+        th Battery
+        th Temperature
+        th Humidity
+    each info, i in sensorInfoCollection
+      tr
+        td #{info.date}
+        td #{info.channel}
+        td #{info.powerUUID}
+        td #{!info.battery ? "OK" : "Discharged"}
+        td #{info.temperature}
+        td #{info.humidity}
