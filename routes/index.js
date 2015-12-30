@@ -18,12 +18,26 @@ router.get('/meteo', function(req, res) {
 });
 
 router.get('/meteo/json', function(req, res) {
-    var db = req.db;
+    var db = req.db,
+        query = req.query.q ? JSON.parse(decodeURIComponent(req.query.q)) : {},
+        order = req.query.order ? JSON.parse(decodeURIComponent(req.query.order)) : {},
+        offset = req.query.offset ? Number(req.query.offset) : 0,
+        limit = req.query.limit ? Number(req.query.limit) : 100,
+        projection = {
+            limit : limit,
+            skip : offset,
+            sort : order
+        };
+
     var collection = db.get('bl999SensorCollection');
-    collection.find({}, {}, function(e, docs) {
-        res.setHeader('content-type', 'application/json');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.send(docs);
+
+    collection.count(query, function(e, total) {
+        collection.find(query, projection, function(e, docs) {
+            res.setHeader('content-type', 'application/json');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('total', total);
+            res.send(docs);
+        });
     });
 });
 
